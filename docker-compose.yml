@@ -6,7 +6,7 @@ services:
     container_name: snippet_manager_db
     restart: always
     env_file:
-      - ./.env  # Add this line
+      - ./.env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
