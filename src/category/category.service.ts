@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { CategoryResponseDto } from './dto/category-response.dto';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class CategoryService {
@@ -11,7 +13,7 @@ export class CategoryService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async create(createCategoryDto: CreateCategoryDto, userId: number): Promise<CategoryResponseDto> {
     const existingCategory = await this.categoryRepository.findOne({
       where: { name: createCategoryDto.name },
     });
@@ -19,8 +21,14 @@ export class CategoryService {
       throw new ConflictException('Category with this name already exists');
     }
 
-    const newCategory = this.categoryRepository.create(createCategoryDto);
-    return this.categoryRepository.save(newCategory);
+    const newCategory = this.categoryRepository.create({
+      ...createCategoryDto,
+      userId: userId,
+    });
+    const savedCategory = await this.categoryRepository.save(newCategory);
+
+    // Transform the entity to the DTO before returning
+    return plainToClass(CategoryResponseDto, savedCategory);
   }
 
   async findAll(): Promise<Category[]> {

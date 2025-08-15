@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Category } from 'src/category/entities/category.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class User {
@@ -18,4 +19,8 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+    // One User can have many Categories
+  @OneToMany(() => Category, category => category.user)
+  categories: Category[];
 }
