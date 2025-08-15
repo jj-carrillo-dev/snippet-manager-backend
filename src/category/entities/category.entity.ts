@@ -1,6 +1,6 @@
-import { User } from 'src/user/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from 'typeorm';
-
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
+import { Snippet } from '../../snippet/entities/snippet.entity';
 @Entity()
 export class Category {
   @PrimaryGeneratedColumn()
@@ -15,4 +15,7 @@ export class Category {
 
   @Column()
   userId: number;
+
+  @OneToMany(() => Snippet, snippet => snippet.category)
+  snippets: Snippet[];
 }

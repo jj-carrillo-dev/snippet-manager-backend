@@ -15,7 +15,7 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto, userId: number): Promise<CategoryResponseDto> {
     const existingCategory = await this.categoryRepository.findOne({
-      where: { name: createCategoryDto.name },
+      where: { name: createCategoryDto.name, userId: userId },
     });
     if (existingCategory) {
       throw new ConflictException('Category with this name already exists');

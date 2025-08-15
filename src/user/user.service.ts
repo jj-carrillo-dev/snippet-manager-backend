@@ -46,7 +46,7 @@ export class UserService {
   async remove(id: number): Promise<DeleteResult> {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
+      throw new NotFoundException('User not found');
     }
     return this.usersRepository.delete(id);
   }

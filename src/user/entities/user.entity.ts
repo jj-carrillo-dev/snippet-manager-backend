@@ -1,26 +1,24 @@
-import { Exclude } from 'class-transformer';
-import { Category } from 'src/category/entities/category.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Category } from '../../category/entities/category.entity';
+import { Snippet } from '../../snippet/entities/snippet.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
-
   @Column({ unique: true })
   email: string;
 
-  @Exclude()
+  @Column({ unique: true, nullable: true })
+  username?: string;
+
   @Column()
-  password: string;
+  password?: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-    // One User can have many Categories
   @OneToMany(() => Category, category => category.user)
   categories: Category[];
+
+  @OneToMany(() => Snippet, snippet => snippet.user)
+  snippets: Snippet[];
 }
