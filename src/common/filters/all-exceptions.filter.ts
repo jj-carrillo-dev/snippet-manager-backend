@@ -18,11 +18,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    let message = 'Internal Server Error';
+    let message: string | object = 'Internal Server Error';
 
     if (exception instanceof HttpException) {
       const exceptionResponse = exception.getResponse();
-      // Check if the response is an object with a 'message' key (like default NestJS errors)
+      // Correctly handle both string and object messages from NestJS exceptions
       message = (typeof exceptionResponse === 'object' && 'message' in exceptionResponse)
         ? (exceptionResponse as any).message
         : exceptionResponse as string;

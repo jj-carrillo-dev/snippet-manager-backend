@@ -51,4 +51,8 @@ export class UserService {
     return this.usersRepository.delete(id);
   }
 
+  async findOneByEmail(email: string): Promise<User | undefined> {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    return user ?? undefined;
+  }
 }
