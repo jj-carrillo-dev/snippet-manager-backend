@@ -16,10 +16,10 @@ export class SnippetService {
   ) {}
 
   async create(createSnippetDto: CreateSnippetDto, userId: number): Promise<Snippet> {
-    const { categoryId, ...snippetData } = createSnippetDto;
+    const  { categoryId, ...snippetData } = createSnippetDto;
 
-    const category = await this.categoryService.findOne(categoryId);
-    if (!category) {
+    const category = await this.categoryService.findOne(categoryId, userId);
+    if  (!category) {
       throw new NotFoundException('Category not found or you do not have permission to use it');
     }
 
@@ -28,6 +28,7 @@ export class SnippetService {
       user: { id: userId },
       category: { id: categoryId },
     });
+
     return this.snippetRepository.save(newSnippet);
   }
 
@@ -52,13 +53,26 @@ export class SnippetService {
   }
 
   async update(id: number, updateSnippetDto: UpdateSnippetDto, userId: number): Promise<Snippet> {
-    const snippet = await this.snippetRepository.findOne({ where: { id, user: { id: userId } } });
+    const snippet = await this.snippetRepository.findOne({
+      where: { id, user: { id: userId } },
+      relations: ['category'],
+    });
 
     if (!snippet) {
       throw new NotFoundException('Snippet not found or you do not have permission to update it');
     }
-    
+
+    if (updateSnippetDto.categoryId) {
+      const category = await this.categoryService.findOne(updateSnippetDto.categoryId, userId);
+      if (!category) {
+        throw new NotFoundException('Category not found');
+      }
+      snippet.category = category;
+      delete updateSnippetDto.categoryId;
+    }
+
     Object.assign(snippet, updateSnippetDto);
+
     return this.snippetRepository.save(snippet);
   }
 

@@ -3,55 +3,75 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { CategoryResponseDto } from './dto/category-response.dto';
-import { plainToClass } from 'class-transformer';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { DeleteResult } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto, userId: number): Promise<CategoryResponseDto> {
+  async create(createCategoryDto: CreateCategoryDto, userId: number): Promise<Category> {
+
     const existingCategory = await this.categoryRepository.findOne({
-      where: { name: createCategoryDto.name, userId: userId },
+      where: { name: createCategoryDto.name, user: { id: userId } },
     });
     if (existingCategory) {
-      throw new ConflictException('Category with this name already exists');
+      throw new ConflictException('Category with this name already exists for this user');
     }
 
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+        throw new NotFoundException('User not found');
+    }
+    console.log('User: ', user);
+    console.log('Existing Category: ', existingCategory);
     const newCategory = this.categoryRepository.create({
       ...createCategoryDto,
-      userId: userId,
+      user: user,
     });
-    const savedCategory = await this.categoryRepository.save(newCategory);
-
-    // Transform the entity to the DTO before returning
-    return plainToClass(CategoryResponseDto, savedCategory);
+    return this.categoryRepository.save(newCategory);
   }
 
-  async findAll(): Promise<Category[]> {
-    return this.categoryRepository.find();
+  async findAll(userId: number): Promise<Category[]> {
+    return this.categoryRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
   }
 
-  async findOne(id: number): Promise<Category> {
-    const category = await this.categoryRepository.findOne({ where: { id } });
+  async findOne(id: number, userId: number): Promise<Category> {
+    const category = await this.categoryRepository.findOne({
+      where: { id, user: { id: userId } },
+      relations: ['user'],
+    });
     if (!category) {
       throw new NotFoundException(`Category with ID "${id}" not found`);
     }
     return category;
   }
 
-  async update(id: number, updateCategoryDto: any): Promise<Category> {
-    const category = await this.findOne(id);
-    
+  async update(id: number, userId: number, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
+    const category = await this.categoryRepository.findOne({
+      where: { id, user: { id: userId } },
+      relations: ['user'],
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category with ID "${id}" not found`);
+    }
+
     if (updateCategoryDto.name && updateCategoryDto.name !== category.name) {
       const existingCategory = await this.categoryRepository.findOne({
-        where: { name: updateCategoryDto.name },
+        where: { name: updateCategoryDto.name, user: { id: userId } },
       });
       if (existingCategory) {
-        throw new ConflictException('Category with this name already exists');
+        throw new ConflictException('Category with this name already exists for this user');
       }
     }
 
@@ -59,8 +79,14 @@ export class CategoryService {
     return this.categoryRepository.save(category);
   }
 
-  async remove(id: number): Promise<void> {
-    const category = await this.findOne(id);
-    await this.categoryRepository.remove(category);
+  async remove(id: number, userId: number): Promise<DeleteResult> {
+    const category = await this.categoryRepository.findOne({
+      where: { id, user: { id: userId } }
+    });
+    
+    if (!category) {
+      throw new NotFoundException(`Category with ID "${id}" not found`);
+    }
+    return this.categoryRepository.delete(id);
   }
 }

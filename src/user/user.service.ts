@@ -55,4 +55,12 @@ export class UserService {
     const user = await this.usersRepository.findOne({ where: { email } });
     return user ?? undefined;
   }
+
+  async findOneWithParams(params: any): Promise<User> {
+    const user = await this.usersRepository.findOne(params);
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+    return user;
+  }
 }

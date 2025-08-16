@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
 import { Snippet } from '../../snippet/entities/snippet.entity';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -10,7 +10,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ unique: true, nullable: false })
   username?: string;
 
   @Column()

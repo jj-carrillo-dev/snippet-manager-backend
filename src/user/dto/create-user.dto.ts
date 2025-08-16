@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-valid
 export class CreateUserDto {
   @IsNotEmpty()
   @MaxLength(100)
-  name: string;
+  username: string;
 
   @IsNotEmpty()
   @IsEmail()

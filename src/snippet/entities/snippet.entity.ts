@@ -3,7 +3,7 @@ import { Exclude } from 'class-transformer';
 import { User } from '../../user/entities/user.entity';
 import { Category } from '../../category/entities/category.entity';
 
-@Entity()
+@Entity('snippets')
 export class Snippet {
   @PrimaryGeneratedColumn()
   id: number;
