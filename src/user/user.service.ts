@@ -51,6 +51,20 @@ export class UserService {
   }
 
   /**
+   * Finds a single user by their globally unique identifier (GUID).
+   * Throws a NotFoundException if the user does not exist.
+   * @param guid The GUID of the user to find.
+   * @returns A promise that resolves to the found user entity.
+   */
+  async findOneByGuid(guid: string): Promise<User> {
+    const user = await this.usersRepository.findOne({ where: { guid } });
+    if (!user) {
+      throw new NotFoundException(`User with GUID "${guid}" not found`);
+    }
+    return user;
+  }
+
+  /**
    * Updates a user's information.
    * First finds the user to ensure it exists, then updates the fields and saves.
    * @param id The ID of the user to update.

@@ -11,7 +11,7 @@ This is a **Node.js API** built with **NestJS**, **TypeORM**, and **PostgreSQL**
   * **Category Management**: Organize snippets by creating, retrieving, updating, and deleting custom categories for each user.
   * **Snippet Management**: Full CRUD operations for code snippets, with each snippet tied to a user and a category.
   * **Data Validation**: Comprehensive data validation for all requests using **class-validator** and DTOs.
-  * **Unit & E2E Testing**: Extensive test coverage using **Jest** to ensure the reliability and stability of the application.
+  * **Unit Testing**: Extensive test coverage using **Jest** to ensure the reliability and stability of the application.
   * **Error Handling**: A centralized exception filter to provide consistent and informative error responses.
   * **ORM**: Uses **TypeORM** for seamless database interactions and relationship management.
   * **Environment Configuration**: Secure management of sensitive information using the **NestJS ConfigModule**.
@@ -25,7 +25,7 @@ This is a **Node.js API** built with **NestJS**, **TypeORM**, and **PostgreSQL**
   * **ORM**: TypeORM
   * **Authentication**: Passport.js with JWT and Local strategies
   * **Validation**: class-validator, class-transformer
-  * **Testing**: Jest, Supertest
+  * **Testing**: Jest
   * **Linting/Formatting**: ESLint, Prettier
 
 -----
@@ -43,8 +43,8 @@ Before you begin, ensure you have the following installed on your machine:
 ### 1\. Clone the repository
 
 ```sh
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/jj-carrillo-dev/snippet-manager-backend
+cd snippet-manager-backend
 ```
 
 ### 2\. Set up the environment variables
