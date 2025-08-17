@@ -5,9 +5,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
-
 @Controller('user')
-@UsePipes(new ValidationPipe({ whitelist: true })) // Apply validation pipes globally to the controller
+@UsePipes(new ValidationPipe({ whitelist: true }))
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -34,15 +33,27 @@ export class UserController {
   }
 
   /**
-   * Finds a single user by their ID.
+   * Finds a single user by their numerical ID.
    * This endpoint requires JWT authentication.
-   * @param id The ID of the user to find.
+   * @param id The numerical ID of the user to find.
    * @returns A promise that resolves to the found user entity.
    */
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<User> {
+  findOneById(@Param('id') id: string): Promise<User> {
     return this.userService.findOne(+id);
+  }
+
+  /**
+   * Finds a single user by their globally unique identifier (GUID).
+   * This endpoint requires JWT authentication.
+   * @param guid The GUID of the user to find.
+   * @returns A promise that resolves to the found user entity.
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Get('guid/:guid')
+  findOneByGuid(@Param('guid') guid: string): Promise<User> {
+    return this.userService.findOneByGuid(guid);
   }
 
   /**
