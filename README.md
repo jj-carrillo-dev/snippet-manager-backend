@@ -1,98 +1,97 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Snippet Code Manager API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This is a **Node.js API** built with **NestJS**, **TypeORM**, and **PostgreSQL**. It is designed to be the backend for a code snippet management application, allowing users to store, organize, and manage their personal code snippets.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+-----
 
-## Description
+## 🚀 Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+  * **User Authentication**: Secure user registration and login using **JWT (JSON Web Tokens)**.
+  * **User Management**: Endpoints for creating, retrieving, updating, and deleting user accounts.
+  * **Category Management**: Organize snippets by creating, retrieving, updating, and deleting custom categories for each user.
+  * **Snippet Management**: Full CRUD operations for code snippets, with each snippet tied to a user and a category.
+  * **Data Validation**: Comprehensive data validation for all requests using **class-validator** and DTOs.
+  * **Unit & E2E Testing**: Extensive test coverage using **Jest** to ensure the reliability and stability of the application.
+  * **Error Handling**: A centralized exception filter to provide consistent and informative error responses.
+  * **ORM**: Uses **TypeORM** for seamless database interactions and relationship management.
+  * **Environment Configuration**: Secure management of sensitive information using the **NestJS ConfigModule**.
 
-## Project setup
+-----
 
-```bash
-$ npm install
+## 🛠️ Tech Stack
+
+  * **Framework**: NestJS
+  * **Database**: PostgreSQL
+  * **ORM**: TypeORM
+  * **Authentication**: Passport.js with JWT and Local strategies
+  * **Validation**: class-validator, class-transformer
+  * **Testing**: Jest, Supertest
+  * **Linting/Formatting**: ESLint, Prettier
+
+-----
+
+## ⚙️ Getting Started
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed on your machine:
+
+  * **Node.js** (v18 or higher)
+  * **npm** or **Yarn**
+  * **Docker** (Recommended for setting up the database easily)
+
+### 1\. Clone the repository
+
+```sh
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
 ```
 
-## Compile and run the project
+### 2\. Set up the environment variables
 
-```bash
-# development
-$ npm run start
+Create a `.env` file in the root directory based on the `.env.example` file.
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```ini
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=myuser
+POSTGRES_PASSWORD=mypassword
+POSTGRES_DB=snippet_manager
+JWT_SECRET_KEY="Your_Secret_Key_Here"
 ```
 
-## Run tests
+### 3\. Install dependencies
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```sh
+npm install
+# or
+yarn install
 ```
 
-## Deployment
+### 4\. Run the application
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+To run the application in development mode with hot-reloading:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```sh
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+This will automatically create and run the database container, apply migrations, and start the NestJS server.
 
-## Resources
+-----
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🧪 Running Tests
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+To run the unit and end-to-end tests:
 
-## Support
+```sh
+npm run test:cov
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+This command runs all tests and provides a detailed coverage report.
 
-## Stay in touch
+-----
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 📄 License
 
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Distributed under the MIT License. See `LICENSE` for more information.
