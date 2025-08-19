@@ -5,7 +5,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import type { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
 
-@Controller('category')
+@Controller('categories')
 @UseGuards(AuthGuard('jwt')) // Protects all endpoints in this controller
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}

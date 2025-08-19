@@ -1,6 +1,7 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { IsNumber, IsString } from 'class-validator';
-import { Category } from '../entities/category.entity';
+import { Category } from 'src/category/entities/category.entity';
+import { UserResponseDto } from 'src/user/dto/UserResponseDto';
 
 /**
  * Data Transfer Object for a category response.
@@ -23,12 +24,14 @@ export class CategoryResponseDto {
   @IsString()
   name: string;
 
+
   /**
-   * The ID of the user who owns the category.
+   * The user who owns this category.
+   * The `@Type` decorator ensures the nested user object is correctly transformed.
    */
   @Expose()
-  @IsNumber()
-  userId: number;
+  @Type(() => UserResponseDto)
+  user: UserResponseDto;
 
   /**
    * Constructor to create a DTO instance from a partial Category entity.

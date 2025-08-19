@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UserResponseDto } from './dto/UserResponseDto';
 
 @Controller('user')
 @UsePipes(new ValidationPipe({ whitelist: true }))
@@ -17,7 +18,7 @@ export class UserController {
    * @returns A promise that resolves to the newly created user entity.
    */
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     return this.userService.create(createUserDto);
   }
 
@@ -28,7 +29,7 @@ export class UserController {
    */
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  findAll(): Promise<User[]> {
+  findAll(): Promise<UserResponseDto[]> {
     return this.userService.findAll();
   }
 
@@ -40,7 +41,7 @@ export class UserController {
    */
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
-  findOneById(@Param('id') id: string): Promise<User> {
+  findOneById(@Param('id') id: string): Promise<UserResponseDto> {
     return this.userService.findOne(+id);
   }
 
@@ -52,7 +53,7 @@ export class UserController {
    */
   @UseGuards(AuthGuard('jwt'))
   @Get('guid/:guid')
-  findOneByGuid(@Param('guid') guid: string): Promise<User> {
+  findOneByGuid(@Param('guid') guid: string): Promise<UserResponseDto> {
     return this.userService.findOneByGuid(guid);
   }
 
@@ -68,7 +69,7 @@ export class UserController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
+  ): Promise<UserResponseDto> {
     return this.userService.update(+id, updateUserDto);
   }
 

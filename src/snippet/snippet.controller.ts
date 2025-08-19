@@ -3,10 +3,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { SnippetService } from './snippet.service';
 import { CreateSnippetDto } from './dto/create-snippet.dto';
 import { UpdateSnippetDto } from './dto/update-snippet.dto';
-import { SnippetResponseDto } from './dto/snippet-response.dto';
+import { SnippetResponseDto } from './dto/SnippetResponseDto';
 import type { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
 
-@Controller('snippet')
+@Controller('snippets')
 @UseGuards(AuthGuard('jwt')) // Protect all routes in this controller with JWT authentication
 export class SnippetController {
   constructor(private readonly snippetService: SnippetService) {}
