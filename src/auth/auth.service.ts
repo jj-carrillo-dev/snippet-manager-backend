@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
@@ -21,12 +21,17 @@ export class AuthService {
    */
   async validateUser(emailOrUsername: string, pass: string): Promise<any> {
     // Find the user by either email or username using an array in the where clause.
-    const user = await this.userService.findOneWithParams({
-      where: [
-        { email: emailOrUsername },
-        { username: emailOrUsername },
-      ] as FindOptionsWhere<User>,
-    });
+    let user:any = {password:""};
+    try {
+      user = await this.userService.findOneWithParams({
+        where: [
+          { email: emailOrUsername },
+          { username: emailOrUsername },
+        ] as FindOptionsWhere<User>,
+      });
+    } catch (error) {
+        throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
+    }
 
     // Compare the provided password with the stored hashed password.
     if (user && user.password && (await bcrypt.compare(pass, user.password))) {
@@ -48,6 +53,10 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        username: user.username
+      },
     };
   }
 }

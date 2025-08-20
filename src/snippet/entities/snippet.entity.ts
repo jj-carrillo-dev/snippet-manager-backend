@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { User } from '../../user/entities/user.entity';
 import { Category } from '../../category/entities/category.entity';
@@ -34,10 +42,24 @@ export class Snippet {
   language: string;
 
   /**
+   * The date and time when the snippet was created.
+   * This column is automatically set by TypeORM when a new snippet is saved.
+   */
+  @CreateDateColumn()
+  createdAt: Date;
+
+  /**
+   * The date and time when the snippet was last updated.
+   * This column is automatically updated by TypeORM every time the entity is saved.
+   */
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  /**
    * The User entity that owns this snippet.
    * This is a Many-to-One relationship to the User entity.
    */
-  @ManyToOne(() => User, user => user.snippets)
+  @ManyToOne(() => User, (user) => user.snippets)
   @JoinColumn({ name: 'userId' })
   user: User;
 
@@ -53,7 +75,7 @@ export class Snippet {
    * The Category entity this snippet belongs to.
    * This is a Many-to-One relationship to the Category entity.
    */
-  @ManyToOne(() => Category, category => category.snippets)
+  @ManyToOne(() => Category, (category) => category.snippets)
   @JoinColumn({ name: 'categoryId' })
   category: Category;
 

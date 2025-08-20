@@ -5,6 +5,9 @@ import { Snippet } from './entities/snippet.entity';
 import { CreateSnippetDto } from './dto/create-snippet.dto';
 import { UpdateSnippetDto } from './dto/update-snippet.dto';
 import { CategoryService } from '../category/category.service';
+import { SnippetResponseDto } from './dto/SnippetResponseDto';
+import { UserService } from 'src/user/user.service';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class SnippetService {
@@ -12,44 +15,68 @@ export class SnippetService {
     @InjectRepository(Snippet)
     private snippetRepository: Repository<Snippet>,
     private categoryService: CategoryService,
-  ) {}
+    private userService: UserService,
+  ) { }
 
   /**
    * Creates a new code snippet.
-   * Ensures the specified category exists and belongs to the user before creation.
    * @param createSnippetDto The data for the new snippet.
    * @param userId The ID of the user creating the snippet.
-   * @returns A promise that resolves to the newly created snippet entity.
+   * @returns A promise that resolves to the newly created snippet response DTO.
    */
-  async create(createSnippetDto: CreateSnippetDto, userId: number): Promise<Snippet> {
-    const { categoryId, ...snippetData } = createSnippetDto;
+  async create(createSnippetDto: CreateSnippetDto, userId: number): Promise<SnippetResponseDto> {
 
-    // Verify the category exists and belongs to the user
-    const category = await this.categoryService.findOne(categoryId, userId);
-    if (!category) {
-      throw new NotFoundException('Category not found or you do not have permission to use it');
+    let snippetWithRelations: Snippet | null = null;
+    try {
+      const { categoryId, ...snippetData } = createSnippetDto;
+      // Verify the category exists and belongs to the user
+      const category = await this.categoryService.findOne(categoryId, userId);
+      
+      if (!category) {
+        throw new NotFoundException('Category not found or you do not have permission to use it');
+      }
+
+      // Create a new snippet instance with the correct relationships
+      const newSnippet = this.snippetRepository.create({
+        ...snippetData,
+        user: { id: userId },
+        category: { id: categoryId },
+      });
+      
+      // Save the snippet and load the related user and category in one go
+      const savedSnippet = await this.snippetRepository.save(newSnippet);
+      
+      // Find the newly created snippet with its full relations to return a complete DTO
+      snippetWithRelations = await this.snippetRepository.findOne({
+        where: { id: savedSnippet.id },
+        relations: ['user', 'category'],
+      });
+      
+    } catch (error) {
+      throw new NotFoundException('Error creating snippet: ' + error.message);
     }
 
-    // Create a new snippet instance with a user and category relationship
-    const newSnippet = this.snippetRepository.create({
-      ...snippetData,
-      user: { id: userId },
-      category: { id: categoryId },
-    });
-
-    return this.snippetRepository.save(newSnippet);
+    if (!snippetWithRelations) {
+      throw new NotFoundException('Snippet not found after creation');
+    }
+    
+    // Use plainToInstance to create the DTO from the entity
+    return plainToInstance(SnippetResponseDto, snippetWithRelations);
   }
 
   /**
    * Finds all snippets for a specific user.
    * @param userId The ID of the user to find snippets for.
-   * @returns A promise that resolves to an array of snippet entities.
+   * @returns A promise that resolves to an array of snippet response DTOs.
    */
-  async findAll(userId: number): Promise<Snippet[]> {
-    return this.snippetRepository.find({
+  async findAll(userId: number): Promise<SnippetResponseDto[]> {
+    const snippets = await this.snippetRepository.find({
       where: { user: { id: userId } },
       relations: ['user', 'category'],
     });
+
+    const result = snippets.map(snippet => plainToInstance(SnippetResponseDto, snippet));
+    return result;
   }
 
   /**
@@ -57,9 +84,9 @@ export class SnippetService {
    * Throws a NotFoundException if the snippet is not found or doesn't belong to the user.
    * @param id The ID of the snippet to find.
    * @param userId The ID of the user requesting the snippet.
-   * @returns A promise that resolves to the found snippet entity.
+   * @returns A promise that resolves to the found snippet response DTO.
    */
-  async findOne(id: number, userId: number): Promise<Snippet> {
+  async findOne(id: number, userId: number): Promise<SnippetResponseDto> {
     const snippet = await this.snippetRepository.findOne({
       where: { id, user: { id: userId } },
       relations: ['user', 'category'],
@@ -69,7 +96,7 @@ export class SnippetService {
       throw new NotFoundException('Snippet not found or you do not have permission to view it');
     }
 
-    return snippet;
+    return plainToInstance(SnippetResponseDto, snippet);
   }
 
   /**
@@ -79,12 +106,12 @@ export class SnippetService {
    * @param id The ID of the snippet to update.
    * @param updateSnippetDto The data to update the snippet with.
    * @param userId The ID of the user performing the update.
-   * @returns A promise that resolves to the updated snippet entity.
+   * @returns A promise that resolves to the updated snippet response DTO.
    */
-  async update(id: number, updateSnippetDto: UpdateSnippetDto, userId: number): Promise<Snippet> {
+  async update(id: number, updateSnippetDto: UpdateSnippetDto, userId: number): Promise<SnippetResponseDto> {
     const snippet = await this.snippetRepository.findOne({
       where: { id, user: { id: userId } },
-      relations: ['category'],
+      relations: ['user', 'category'], // Include relations for a complete response
     });
 
     if (!snippet) {
@@ -93,7 +120,7 @@ export class SnippetService {
 
     // If a new category is specified, find and validate it
     if (updateSnippetDto.categoryId) {
-      const category = await this.categoryService.findOne(updateSnippetDto.categoryId, userId);
+      const category = await this.categoryService.findOneCategory(updateSnippetDto.categoryId, userId);
       if (!category) {
         throw new NotFoundException('Category not found');
       }
@@ -105,7 +132,9 @@ export class SnippetService {
     // Update the snippet with the remaining DTO properties
     Object.assign(snippet, updateSnippetDto);
 
-    return this.snippetRepository.save(snippet);
+    const updatedSnippet = await this.snippetRepository.save(snippet);
+
+    return plainToInstance(SnippetResponseDto, updatedSnippet);
   }
 
   /**

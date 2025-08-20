@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BeforeInsert } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  BeforeInsert,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
 import { Snippet } from '../../snippet/entities/snippet.entity';
 import { v4 as uuidv4 } from 'uuid';
@@ -46,17 +54,31 @@ export class User {
   password?: string;
 
   /**
+   * The date and time when the user was created.
+   * This column is automatically set by TypeORM when a new user is saved.
+   */
+  @CreateDateColumn()
+  createdAt: Date;
+
+  /**
+   * The date and time when the user was last updated.
+   * This column is automatically updated by TypeORM every time the entity is saved.
+   */
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  /**
    * A one-to-many relationship with the Category entity.
    * This links a user to all the categories they have created.
    */
-  @OneToMany(() => Category, category => category.user)
+  @OneToMany(() => Category, (category) => category.user)
   categories: Category[];
 
   /**
    * A one-to-many relationship with the Snippet entity.
    * This links a user to all the snippets they have created.
    */
-  @OneToMany(() => Snippet, snippet => snippet.user)
+  @OneToMany(() => Snippet, (snippet) => snippet.user)
   snippets: Snippet[];
 
   /**

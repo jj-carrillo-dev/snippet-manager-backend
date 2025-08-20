@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
-import { User } from '../user/entities/user.entity';
+import { UserResponseDto } from 'src/user/dto/UserResponseDto';
 
 /**
  * Passport strategy for JWT authentication.
@@ -36,7 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @returns A promise that resolves to the user object.
    * @throws UnauthorizedException if the user does not exist.
    */
-  async validate(payload: any): Promise<User> {
+  async validate(payload: any): Promise<UserResponseDto> {
     const user = await this.userService.findOne(payload.sub);
     if (!user) {
       throw new UnauthorizedException();
